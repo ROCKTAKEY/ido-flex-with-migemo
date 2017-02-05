@@ -1,0 +1,15 @@
+* Depend
+  Depend on:
+  - flx-ido (https://github.com/lewang/flx.git)
+  - migemo (https://github.com/emacs-jp/migemo.git)
+* Usage
+  If you turn on "ido-flex-with-migemo-mode," you can use ido with both flex and migemo.
+* Variable
+** ido-flex-with-migemo-excluded-func-list
+   This is list of function you don't want to use ido-flex-with-migemo.
+   Here's an example:
+
+#+BEGIN_SRC emacs-lisp -n
+(require 'smex)      ;;you have to install "smex" if you use this example
+(add-to-list 'ido-flex-with-migemo-excluded-func-list 'smex)
+#+END_SRC
