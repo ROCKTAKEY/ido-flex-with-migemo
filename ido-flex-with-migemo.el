@@ -1,4 +1,4 @@
-;;; ido-flex-with-migemo.el --- use migemo with flex and migemo
+;;; ido-flex-with-migemo.el --- use ido with flex and migemo
 
 ;; Copyright (C) 2017 by ROCKTAKEY
 
