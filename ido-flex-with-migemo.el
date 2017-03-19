@@ -76,7 +76,7 @@
 
 
 (defun ido-flex-with-migemo--migemo-match (query items)
-  "Return list of matches to QUERY in ITEMS on migemo."
+  "Return list of match to QUERY in ITEMS on migemo."
   (let ((regexp (migemo-get-pattern query))
         result)
 
@@ -85,7 +85,7 @@
              if (string-match regexp str)
              collect x)))
 (defun ido-flex-with-migemo--flex-with-migemo-match (query items)
-  "Return list of matches to QUERY in ITEMS on migemo and flex"
+  "Return list of match to QUERY in ITEMS on migemo and flex."
   (let ((flex-items   (flx-ido-match query items))
         (migemo-items (ido-flex-with-migemo--migemo-match query items)))
     (setq migemo-items
@@ -96,7 +96,8 @@
 
 
 (defun ido-flex-with-migemo--set-matches-1 (orig-func &rest args)
-  "Choose among the regular ido-set-matches-1, ido-flex-with-migemo--match and flx-ido-match."
+  "Advice for ORIG-FUNC with ARGS.
+Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and `flx-ido-match'."
   (let (ad-return-value)
     (if (or (not ido-flex-with-migemo-mode)
             (memq this-command ido-flex-with-migemo--excluded-func-list))
