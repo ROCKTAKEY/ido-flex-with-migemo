@@ -15,7 +15,7 @@
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
-2;; (at your option) any later version.
+;; (at your option) any later version.
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,20 +60,29 @@
 
 ;;; Code:
 
-(require 'flx-ido)
 (require 'migemo)
+(require 'flx-ido)
+(advice-remove 'ido-set-matches-1 'ad-Advice-ido-set-matches-1)
+
 
 (defgroup ido-flex-with-migemo nil
   "Group of `ido-flex-with-migemo-mode'"
   :group 'ido)
+
 (defcustom ido-flex-with-migemo--excluded-func-list '(ido-describe-bindings
                                                       describe-variable
                                                       describe-function
                                                       smex)
   "This is list of function you don't want to use ido-flex-with-migemo."
-  :group 'ido-flex-with-migemo)
-(defface ido-flex-with-migemo-migemo-face '(((background light) :background  "#ded0ff" :italic t)
-                                            ((background black) :background  "#0e905f" :italic t))
+  :group 'ido-flex-with-migemo
+  :type '(list))
+(defcustom ido-flex-with-migemo-least-char 2
+  "migemo in ido is inactivated if length of query is less than this value. "
+  :group 'ido-flex-with-migemo
+  :type '(value))
+
+(defface ido-flex-with-migemo-migemo-face '((((background light)) (:background  "#ded0ff" :italic t))
+                                            (((background dark))  (:background  "#0e905f" :italic t)))
   "this face is used when ido is used with migemo.")
 
 
@@ -104,18 +113,22 @@
   "Advice for ORIG-FUNC with ARGS.
 Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and `flx-ido-match'."
   (let (ad-return-value)
-    (if (or (not ido-flex-with-migemo-mode)
-            (memq this-command ido-flex-with-migemo--excluded-func-list))
+    
+    (if (or (not ido-flex-with-migemo-mode) ;ido-flex-with-migemo-mode が off
+            (memq this-command ido-flex-with-migemo--excluded-func-list) ;command が excluded にある
+            (>= ido-flex-with-migemo-least-char (length ido-text)))
 
-        (if (not flx-ido-mode) (funcall orig-func args)
-          (let* ((query ido-text)
-                 (original-items (car args)))
+        (if (not flx-ido-mode)          ;flex-ido-mode が off ならば
+            (funcall orig-func args)    ;そのまま
+          ;; flex-ido-mode が on ならば
+          (let ((query ido-text)
+                (original-items (car args)))
             (flx-ido-debug "query: %s" query)
             (flx-ido-debug "id-set-matches-1 sees %s items" (length original-items))
             (setq ad-return-value (flx-ido-match query original-items)))
           (flx-ido-debug "id-set-matches-1 returning %s items starting with %s "
                          (length ad-return-value) (car ad-return-value)))
-      
+      ;; ido-flex-with-migemo を発動するなら
       (let ((query ido-text)
             (original-items (car args)))
         (flx-ido-debug "query: %s" query)
@@ -125,7 +138,7 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
                      (length ad-return-value) (car ad-return-value)))
     ad-return-value))
 
-
+(advice-add 'ido-set-matches-1 :around  'ido-flex-with-migemo--set-matches-1)
 
 ;;;###autoload
 (define-minor-mode ido-flex-with-migemo-mode
@@ -134,9 +147,11 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
   :lighter ""
   :group 'ido-flex-with-migemo
   :global t
-  (if ido-flex-with-migemo-mode
-      (advice-add 'ido-set-matches-1 :around  'ido-flex-with-migemo--set-matches-1)
-    (advice-remove 'ido-set-matches-1 'ido-flex-with-migemo--set-matches-1)))
+  ;; (if ido-flex-with-migemo-mode
+  ;;     (advice-add 'ido-set-matches-1 :around  'ido-flex-with-migemo--set-matches-1)
+  ;;   (advice-remove 'ido-set-matches-1 'ido-flex-with-migemo--set-matches-1)
+  ;;   )
+  )
 
 (provide 'ido-flex-with-migemo)
 
