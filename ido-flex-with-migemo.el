@@ -82,8 +82,9 @@
   :group 'ido-flex-with-migemo
   :type '(value))
 
-(defface ido-flex-with-migemo-migemo-face '((((background light)) (:background  "#ded0ff" :italic t))
-                                            (((background dark))  (:background  "#0e602f" :italic t)))
+(defface ido-flex-with-migemo-migemo-face
+  '((((background light)) (:background  "#ded0ff" :italic t))
+    (((background dark))  (:background  "#0e602f" :italic t)))
   "this face is used when ido is used with migemo.")
 
 
@@ -115,13 +116,13 @@
 Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and `flx-ido-match'."
   (let (ad-return-value)
     
-    (if (or (not ido-flex-with-migemo-mode) ;ido-flex-with-migemo-mode が off
-            (memq this-command ido-flex-with-migemo-excluded-func-list) ;command が excluded にある
+    (if (or (not ido-flex-with-migemo-mode) ; if ido-flex-with-migemo-mode off
+            (memq this-command ido-flex-with-migemo-excluded-func-list) ; command is excluded
             (>= ido-flex-with-migemo-least-char (length ido-text)))
 
-        (if (not flx-ido-mode)          ;flex-ido-mode が off ならば
-            (funcall orig-func args)    ;そのまま
-          ;; flex-ido-mode が on ならば
+        (if (not flx-ido-mode)          ; if flex-ido-mode off
+            (funcall orig-func args)
+          ;; if flex-ido-mode on
           (let ((query ido-text)
                 (original-items (car args)))
             (flx-ido-debug "query: %s" query)
@@ -129,7 +130,7 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
             (setq ad-return-value (flx-ido-match query original-items)))
           (flx-ido-debug "id-set-matches-1 returning %s items starting with %s "
                          (length ad-return-value) (car ad-return-value)))
-      ;; ido-flex-with-migemo を発動するなら
+      ;; if apply ido-flex-with-migemo
       (let ((query ido-text)
             (original-items (car args)))
         (flx-ido-debug "query: %s" query)
