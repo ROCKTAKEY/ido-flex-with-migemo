@@ -117,6 +117,7 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
   (let (ad-return-value)
     
     (if (or (not ido-flex-with-migemo-mode) ; if ido-flex-with-migemo-mode off
+            (not migemo-process)
             (memq this-command ido-flex-with-migemo-excluded-func-list) ; command is excluded
             (>= ido-flex-with-migemo-least-char (length ido-text)))
 
@@ -153,6 +154,8 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
   ;;     (advice-add 'ido-set-matches-1 :around  'ido-flex-with-migemo--set-matches-1)
   ;;   (advice-remove 'ido-set-matches-1 'ido-flex-with-migemo--set-matches-1)
   ;;   )
+  (unless migemo-process
+    (message "ido-flex-with-migemo: No migemo process."))
   )
 
 (provide 'ido-flex-with-migemo)
