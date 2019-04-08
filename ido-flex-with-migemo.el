@@ -76,11 +76,12 @@
     smex)
   "This is list of function you don't want to use ido-flex-with-migemo."
   :group 'ido-flex-with-migemo
-  :type '(list))
+  :type '(repeat function))
+
 (defcustom ido-flex-with-migemo-least-char 2
   "migemo in ido is inactivated if length of query is less than this value. "
   :group 'ido-flex-with-migemo
-  :type '(value))
+  :type 'number)
 
 (defface ido-flex-with-migemo-migemo-face
   '((((background light)) (:background  "#ded0ff" :italic t))
