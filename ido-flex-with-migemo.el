@@ -92,13 +92,15 @@
   "Return list of match to QUERY in ITEMS on migemo."
   (let ((regexp (migemo-get-pattern query))
         result)
-    (cl-loop for x in items with str
-             do (setq str (if (listp x) (car x) x))
-             if (string-match regexp str) 
-             collect
-             (if (listp x)
-                 (cons (propertize (car x) 'face 'ido-flex-with-migemo-migemo-face) (cdr x))
-               (propertize x 'face 'ido-flex-with-migemo-migemo-face)))))
+    (cl-loop
+     for x in items with str
+     do (setq str (if (listp x) (car x) x))
+     if (string-match regexp str)
+     collect
+     (if (listp x)
+         (cons (propertize (car x) 'face 'ido-flex-with-migemo-migemo-face)
+               (cdr x))
+       (propertize x 'face 'ido-flex-with-migemo-migemo-face)))))
 
 (defun ido-flex-with-migemo--flex-with-migemo-match (query items)
   "Return list of match to QUERY in ITEMS on migemo and flex."
@@ -106,19 +108,20 @@
         (migemo-items (ido-flex-with-migemo--migemo-match query items)))
     (setq migemo-items
           (cl-remove-if (lambda (arg) nil nil
-                          (member arg flex-items)) migemo-items))
-    (append flex-items migemo-items)
-    ))
+                          (member arg flex-items))
+                        migemo-items))
+    (append flex-items migemo-items)))
 
 
 (defun ido-flex-with-migemo--set-matches-1 (orig-func &rest args)
   "Advice for ORIG-FUNC with ARGS.
 Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and `flx-ido-match'."
   (let (ad-return-value)
-    
+
     (if (or (not ido-flex-with-migemo-mode) ; if ido-flex-with-migemo-mode off
             (not migemo-process)
-            (memq this-command ido-flex-with-migemo-excluded-func-list) ; command is excluded
+            ;;  command is excluded
+            (memq this-command ido-flex-with-migemo-excluded-func-list)
             (>= ido-flex-with-migemo-least-char (length ido-text)))
 
         (if (not flx-ido-mode)          ; if flex-ido-mode off
@@ -127,7 +130,8 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
           (let ((query ido-text)
                 (original-items (car args)))
             (flx-ido-debug "query: %s" query)
-            (flx-ido-debug "id-set-matches-1 sees %s items" (length original-items))
+            (flx-ido-debug "id-set-matches-1 sees %s items"
+                           (length original-items))
             (setq ad-return-value (flx-ido-match query original-items)))
           (flx-ido-debug "id-set-matches-1 returning %s items starting with %s "
                          (length ad-return-value) (car ad-return-value)))
@@ -135,8 +139,11 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
       (let ((query ido-text)
             (original-items (car args)))
         (flx-ido-debug "query: %s" query)
-        (flx-ido-debug "ido-set-matches-1 sees %s items" (length original-items))
-        (setq ad-return-value  (ido-flex-with-migemo--flex-with-migemo-match query original-items)))
+        (flx-ido-debug "ido-set-matches-1 sees %s items"
+                       (length original-items))
+        (setq
+         ad-return-value
+         (ido-flex-with-migemo--flex-with-migemo-match query original-items)))
       (flx-ido-debug "ido-set-matches-1 returning %s items starting with %s "
                      (length ad-return-value) (car ad-return-value)))
     ad-return-value))
@@ -155,8 +162,7 @@ Choose among the regular `ido-set-matches-1', `ido-flex-with-migemo--match' and 
   ;;   (advice-remove 'ido-set-matches-1 'ido-flex-with-migemo--set-matches-1)
   ;;   )
   (unless migemo-process
-    (message "ido-flex-with-migemo: No migemo process."))
-  )
+    (message "ido-flex-with-migemo: No migemo process.")))
 
 (provide 'ido-flex-with-migemo)
 
